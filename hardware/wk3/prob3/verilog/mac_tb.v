@@ -63,8 +63,8 @@ endfunction
 
 // Unsigned number 
 function [3:0] x_bin ;
+    input integer x;
     begin
-        input integer x;
         if (x > 7) begin
             x_bin[3] = 1;
             x -= 8;
@@ -93,9 +93,12 @@ function [psum_bw-1:0] mac_predicted;
     input reg [bw-1:0] a;
     input reg signed [bw-1:0] b;
     input reg signed [psum_bw-1:0] c;
+
+	reg signed [bw:0] sa;
     begin
         // Just the same thing as mac.v? 
-        mac_predicted = a * b + c;
+		sa = {1'b0, a};
+        mac_predicted = sa * b + c;
     end
 endfunction
 
