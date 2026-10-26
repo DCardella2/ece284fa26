@@ -9,9 +9,9 @@ parameter psum_bw = 16;
 
 reg clk = 0;
 
-reg  [bw-1:0] a;
-reg  [bw-1:0] b;
-reg  [psum_bw-1:0] c;
+reg  [bw-1:0] x0, x1, x2, x3;
+reg  [bw-1:0] w0, w1, w2, w3;
+reg  [psum_bw-1:0] psum_in;
 wire [psum_bw-1:0] out;
 reg  [psum_bw-1:0] expected_out = 0;
 
@@ -21,8 +21,8 @@ integer w_scan_file ; // file handler
 integer x_file ; // file handler
 integer x_scan_file ; // file handler
 
-integer x_dec;
-integer w_dec;
+integer x0_dec, x1_dec, x2_dec, x3_dec;
+integer w0_dec, w1_dec, w2_dec, w3_dec;
 integer i; 
 integer u; 
 
@@ -90,15 +90,19 @@ endfunction
 
 // Below function is for verification
 function [psum_bw-1:0] mac_predicted;
-    input reg [bw-1:0] a;
-    input reg signed [bw-1:0] b;
-    input reg signed [psum_bw-1:0] c;
+    input reg [bw-1:0] x0, x1, x2, x3;
+    input reg signed [bw-1:0] w0, w1, w2, w3;
+    input reg signed [psum_bw-1:0] psum_in;
 
-	reg signed [bw:0] sa;
+	reg signed [bw:0] sx0, sx1, sx2, sx3;
     begin
         // Just the same thing as mac.v? 
-		sa = {1'b0, a};
-        mac_predicted = sa * b + c;
+		sx0 = {1'b0, x0};
+        sx1 = {1'b0, x1};
+        sx2 = {1'b0, x2};
+        sx3 = {1'b0, x3};
+
+        mac_predicted = (sx0 * w0) + (sx1 * w1) + (sx2 * w2) + (sx3 * w3);
     end
 endfunction
 
@@ -128,19 +132,35 @@ initial begin
   $display("-------------------- Computation start --------------------");
   
 
-  for (i=0; i<10; i=i+1) begin  // Data lenght is 10 in the data files
+  for (i=0; i<5; i=i+1) begin  // Data lenght is 10 in the data files
 
      #1 clk = 1'b1;
      #1 clk = 1'b0;
 
-     w_scan_file = $fscanf(w_file, "%d\n", w_dec);
-     x_scan_file = $fscanf(x_file, "%d\n", x_dec);
+     w_scan_file = $fscanf(w_file, "%d\n%d\n%d\n%d\n", 
+                           w0_dec, w1_dec, w2_dec, w3_dec);
 
-     a = x_bin(x_dec); // unsigned number
-     b = w_bin(w_dec); // signed number
-     c = expected_out;
+     x_scan_file = $fscanf(x_file, "%d\n%d\n%d\n%d\n", 
+                           x0_dec, x1_dec, x2_dec, x3_dec);
 
-     expected_out = mac_predicted(a, b, c);
+     x0 = x_bin(x0_dec);
+     x1 = x_bin(x1_dec);
+     x2 = x_bin(x2_dec);
+     x3 = x_bin(x3_dec);
+
+     #1 clk = 1'b1;
+     #1 clk = 1'b0;
+
+     w0 = w_bin(w0_dec);
+     w1 = w_bin(w1_dec);
+     w2 = w_bin(w2_dec);
+     w3 = w_bin(w3_dec);
+     
+     psum_in = expected_out;
+
+     expected_out = mac_predicted(x0, x1, x2, x3, 
+                                  w0, w1, w2, w3, 
+                                  psum_in);
 
   end
 
