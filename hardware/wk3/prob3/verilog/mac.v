@@ -5,6 +5,11 @@ module mac (out, a, b, c);
 parameter bw = 4;
 parameter psum_bw = 16;
 
-...
+wire signed [psum_bw-1:0] mult;
+
+always @(*) begin
+    mult = a * signed(b);
+    out = mult + c;
+end
 
 endmodule

@@ -26,6 +26,7 @@ integer w_dec;
 integer i; 
 integer u; 
 
+// Looks like w_bin = 2s comp version of weight
 function [3:0] w_bin ;
   input integer  weight ;
   begin
@@ -60,19 +61,42 @@ function [3:0] w_bin ;
 endfunction
 
 
-
+// Unsigned number 
 function [3:0] x_bin ;
-
-...
-
+    begin
+        input integer x;
+        if (x > 7) begin
+            x_bin[3] = 1;
+            x -= 8;
+        end else begin
+            x_bin[3] = 0;
+        end
+        if (x > 3) begin
+            x_bin[2] = 1;
+            x -= 4;
+        end else begin
+            x_bin[2] = 0;
+        end
+        if (x > 1) begin
+            x_bin[1] = 1;
+            x -= 2;
+        end else begin
+            x_bin[1] = 0;
+        end
+        x_bin[0] = x > 0 ? 1 : 0;
+    end
 endfunction
 
 
 // Below function is for verification
 function [psum_bw-1:0] mac_predicted;
-  
-...
-
+    input reg [bw-1:0] a;
+    input reg signed [bw-1:0] b;
+    input reg signed [psum_bw-1:0] c;
+    begin
+        // Just the same thing as mac.v? 
+        mac_predicted = a * b + c;
+    end
 endfunction
 
 
