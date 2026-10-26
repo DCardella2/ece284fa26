@@ -102,7 +102,8 @@ function [psum_bw-1:0] mac_predicted;
         sx2 = {1'b0, x2};
         sx3 = {1'b0, x3};
 
-        mac_predicted = (sx0 * w0) + (sx1 * w1) + (sx2 * w2) + (sx3 * w3);
+        mac_predicted = ((sx0 * w0) + (sx1 * w1) + 
+						 (sx2 * w2) + (sx3 * w3) + psum_in);
     end
 endfunction
 
@@ -110,9 +111,9 @@ endfunction
 
 mac_wrapper #(.bw(bw), .psum_bw(psum_bw)) mac_wrapper_instance (
 	.clk(clk), 
-        .a(a), 
-        .b(b),
-        .c(c),
+	.x0(x0), .x1(x1), .x2(x2), .x3(x3), 
+	.w0(w0), .w1(w1), .w2(w2), .w3(w3),
+	.psum_in(psum_in),
 	.out(out)
 ); 
  

@@ -9,14 +9,14 @@ parameter inner_bw = 2 * bw + 1;
 input [bw-1:0] x0, x1, x2, x3;
 input signed [bw-1:0] w0, w1, w2, w3;
 input signed [psum_bw-1:0] psum_in;
-output reg signed [psum_bw-1:0] out;
+output [psum_bw-1:0] out;
 input  clk;
 
 reg    [bw-1:0] x0_q, x1_q, x2_q, x3_q;
 reg    [bw-1:0] w0_q, w1_q, w2_q, w3_q;
 reg    [psum_bw-1:0] psum_q;
 
-mac #(.bw(bw), .psum_bw(psum_bw), .inner_bw) mac_instance (
+mac #(.bw(bw), .psum_bw(psum_bw), .inner_bw(inner_bw)) mac_instance (
         .x0(x0_q), .x1(x1_q), .x2(x2_q), .x3(x3_q),
         .w0(w0_q), .w1(w1_q), .w2(w2_q), .w3(w3_q),
         .psum_in(psum_q),
