@@ -96,16 +96,22 @@ class Bottleneck(nn.Module):
 
 class ResNet_Cifar(nn.Module):
 
-    def __init__(self, block, layers, num_classes=10, float=False):
+    def __init__(self, block, layers, num_classes=10, float=False, bits=4):
         super(ResNet_Cifar, self).__init__()
         self.inplanes = 16
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False)
+        # New: self.bits (for quant, weight, act have equal bitwidth for now)
+        self.bits = bits
+        # 1st conv layer not quantized
+        # self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False)
+        # Actually 1st conv layer quantized now
+        self.conv1 = QuantConv2d(3, 16, kernel_size=3, stride=1, bias=False, bits=self.bits)
         self.bn1 = nn.BatchNorm2d(16)
         self.relu = nn.ReLU(inplace=True)
         self.layer1 = self._make_layer(block, 16, layers[0], float=float)
         self.layer2 = self._make_layer(block, 32, layers[1], stride=2, float=float)
         self.layer3 = self._make_layer(block, 64, layers[2], stride=2, float=float)
         self.avgpool = nn.AvgPool2d(8, stride=1)
+        # Final FC layer not quantized
         self.fc = nn.Linear(64 * block.expansion, num_classes)
 
         for m in self.modules():
@@ -122,7 +128,7 @@ class ResNet_Cifar(nn.Module):
             downsample = nn.Sequential(
                 QuantConv2d(self.inplanes, planes * block.expansion, kernel_size=1, stride=stride, bias=False)
                 if float is False else nn.Conv2d(self.inplanes, planes * block.expansion, kernel_size=1,
-                                                 stride=stride, bias=False),
+                                                 stride=stride, bias=False, bits=self.bits),
                 nn.BatchNorm2d(planes * block.expansion)
             )
 

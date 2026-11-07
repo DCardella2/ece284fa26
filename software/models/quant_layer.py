@@ -90,11 +90,14 @@ def act_quantization(b):
 
 
 class QuantConv2d(nn.Conv2d):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, groups=1, bias=False):
+    # Added bits param to constructor
+    def __init__(self, in_channels, out_channels, kernel_size, 
+                 stride=1, padding=0, dilation=1, groups=1, 
+                 bias=False, bits=4):
         super(QuantConv2d, self).__init__(in_channels, out_channels, kernel_size, stride, padding, dilation, groups,
                                           bias)
         self.layer_type = 'QuantConv2d'
-        self.bit = 4
+        self.bit = bits
         self.weight_quant = weight_quantize_fn(w_bit=self.bit)
         self.act_alq = act_quantization(self.bit)
         self.act_alpha = torch.nn.Parameter(torch.tensor(8.0))
