@@ -5,22 +5,22 @@ module mac_tile (clk, out_s, in_w, out_e, in_n, inst_w, inst_e, reset);
 parameter bw = 4;
 parameter psum_bw = 16;
 
-output [psum_bw-1:0] out_s;     // partial sum output?
-input  [bw-1:0] in_w;           // inst[1]:execute, inst[0]: kernel loading (given)
-output [bw-1:0] out_e;          // activation/weight from west to east???
+output [psum_bw-1:0] out_s;     // partial sum output
+input  [bw-1:0] in_w;           // (west input): inst[1]:execute, inst[0]: kernel loading (given)
+output [bw-1:0] out_e;          // east output
 input  [1:0] inst_w;            // inst[1]: execute, inst[0]: kernel loading
-output [1:0] inst_e;            // 2-bit output
-input  [psum_bw-1:0] in_n;      // 
+output [1:0] inst_e;            // east output (same as inst_w?)
+input  [psum_bw-1:0] in_n;      // north input (prev psum)
 input  clk;
 input  reset;
 
 
 // Declare the latches
-reg[1:0] inst_q; // Clocked inst_w? (or inst_e)???
+reg[1:0] inst_q; // Clocked inst_w?
 reg[bw-1:0] a_q; // Clocked activation (input)?
 reg[bw-1:0] b_q; // Clocked weights
 reg[psum_bw-1:0] c_q; // Clocked input (prev psum)
-reg load_ready_q; 
+reg load_ready_q; // ready to load the weights? 
 
 wire[psum_bw-1:0] mac_out; // mac_instance will drive this output
 
@@ -45,12 +45,13 @@ always @(posedge clk) begin
         a_q <= in_w; 
     end
     if (inst_w[0] && load_ready_q) begin
-        b_q <= in_w; // so maybe in_w is weight???
+        b_q <= in_w; 
         load_ready_q <= 1'b0; 
     end
     if (!load_ready_q) begin
         inst_q[0] <= inst_w[0];
     end
+    // Not sure about the else case
     c_q <= in_n;
 end
 
