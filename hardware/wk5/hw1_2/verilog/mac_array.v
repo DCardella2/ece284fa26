@@ -24,9 +24,6 @@ module mac_array (clk, reset, out_s, in_w, in_n, inst_w, valid);
   // Temporary stored values (row by row) - north inputs and south outputs
   reg [(psum_bw * col * row + 1)-1:0] temp_ns;
 
-  // Note +1 since we have have an all 0 row at the top
-  assign temp[(psum_bw * col)-1:0] = 'b0;
-
   for (i=1; i < row+1 ; i=i+1) begin : row_num
       mac_row #(.bw(bw), .psum_bw(psum_bw)) mac_row_instance (
         .clk(clk), 
@@ -42,6 +39,7 @@ module mac_array (clk, reset, out_s, in_w, in_n, inst_w, valid);
   always @ (posedge clk) begin
    // inst_w flows to row0 to row7
     // Enter into row 0, then move down 1 row per clk cycle
+    temp[(psum_bw * col)-1:0] <= 'b0;
     for (integer i = 1; i < row; ++i) begin
         inst_temp[2*i+1:2*i] <= inst_temp[2*i-1:2*(i-1)];
     end
