@@ -30,8 +30,8 @@ module mac_row (clk, out_s, in_w, in_n, valid, inst_w, reset);
 	 .out_e(temp[bw*(i+1)-1:bw*i]),
 	 .inst_w(inst_temp[2*i-1:2*(i-1)]),
 	 .inst_e(inst_temp[2*(i+1)-1:2*i]), // TODO
-	 .in_n(in_n[psum_bw*i-1:(psum_bw-1)*i]), 
-	 .out_s(in_n[psum_bw*(i+1)-1:psum_bw*i]));
+	 .in_n(in_n[psum_bw*i-1:psum_bw*(i-1)]), 
+	 .out_s(out_s[psum_bw*i-1:psum_bw*(i-1)]));
   end
 
 endmodule
