@@ -37,6 +37,7 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
          .reset(reset));
   end
 
+  integer j;
 
   always @ (posedge clk) begin
    if (reset) begin
@@ -45,17 +46,19 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
    else
 
       /////////////// version1: read all row at a time ////////////////
-      if (rd) begin
-         rd_en = {row{1'b1}};
-      end else begin
-         rd_en = 'b0;
-      end
+      // if (rd) begin
+      //    rd_en <= {row{1'b1}};
+      // end else begin
+      //    rd_en <= 'b0;
+      // end
       ///////////////////////////////////////////////////////
 
-      
-
       //////////////// version2: read 1 row at a time /////////////////
-      
+      rd_en[0] <= rd ? 1'b1 : 1'b0;
+
+      for (j = 1; j < row; j += 1) begin
+         rd_en[j] <= rd_en[j-1];
+      end
       ///////////////////////////////////////////////////////
     end
 
