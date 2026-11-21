@@ -20,8 +20,8 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
   
   genvar i;
 
-  assign o_ready = ?? ;
-  assign o_full  = ?? ;
+  assign o_ready = full == 'b0;
+  assign o_full  = full != 'b0;
 
 
   for (i=0; i<row ; i=i+1) begin : row_num
@@ -29,11 +29,11 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
 	 .rd_clk(clk),
 	 .wr_clk(clk),
 	 .rd(rd_en[i]),
-	 .wr(...),
-         .o_empty(...),
-         .o_full(...),
-	 .in(...),
-	 .out(...),
+	 .wr(wr),  // simultaneous wr_en for all fifo rows?
+         .o_empty(empty[i]),
+         .o_full(full[i]),
+	 .in(in[bw*(row+1)-1:bw*row]),
+	 .out(out[bw*(row+1)-1:bw*row]),
          .reset(reset));
   end
 
@@ -45,10 +45,14 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
    else
 
       /////////////// version1: read all row at a time ////////////////
-      ...
+      if (rd) begin
+         rd_en = {row{1'b1}};
+      end else begin
+         rd_en = 'b0;
+      end
       ///////////////////////////////////////////////////////
 
-
+      
 
       //////////////// version2: read 1 row at a time /////////////////
       ...
