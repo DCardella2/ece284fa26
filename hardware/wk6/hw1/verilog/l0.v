@@ -29,7 +29,7 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
 	 .rd_clk(clk),
 	 .wr_clk(clk),
 	 .rd(rd_en[i]),
-	 .wr(wr),  // simultaneous wr_en for all fifo rows?
+	 .wr(wr),  
          .o_empty(empty[i]),
          .o_full(full[i]),
 	 .in(in[bw*(i+1)-1:bw*i]),
