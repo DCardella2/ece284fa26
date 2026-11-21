@@ -32,8 +32,8 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
 	 .wr(wr),  // simultaneous wr_en for all fifo rows?
          .o_empty(empty[i]),
          .o_full(full[i]),
-	 .in(in[bw*(row+1)-1:bw*row]),
-	 .out(out[bw*(row+1)-1:bw*row]),
+	 .in(in[bw*(i+1)-1:bw*i]),
+	 .out(out[bw*(i+1)-1:bw*i]),
          .reset(reset));
   end
 
@@ -55,7 +55,7 @@ module l0 (clk, in, out, rd, wr, o_full, reset, o_ready);
       
 
       //////////////// version2: read 1 row at a time /////////////////
-      ...
+      
       ///////////////////////////////////////////////////////
     end
 
